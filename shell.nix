@@ -7,5 +7,6 @@ pkgs.mkShell {
     uv
     nodejs
     auth0-cli
+    imagemagick
   ];
 }

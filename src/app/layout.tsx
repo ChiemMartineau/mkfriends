@@ -3,8 +3,8 @@ import { Auth0Provider } from "@auth0/nextjs-auth0/client";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Auth0 Next.js App",
-  description: "Next.js app with Auth0 authentication",
+  title: "MkFriends",
+  description: "Build fast. Connect faster.",
 };
 
 export default function RootLayout({
@@ -14,10 +14,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Auth0Provider>
-          {children}
-        </Auth0Provider>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="bg-bg-melon font-display antialiased min-h-screen">
+        <Auth0Provider>{children}</Auth0Provider>
       </body>
     </html>
   );
