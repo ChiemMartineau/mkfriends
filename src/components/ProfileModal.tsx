@@ -19,7 +19,7 @@ export default function ProfileModal({
   person: ProfileModalData | null;
   onClose: () => void;
 }) {
-    useEffect(() => {
+  useEffect(() => {
     if (!person) return;
 
     const previousOverflow = document.body.style.overflow;
@@ -81,33 +81,36 @@ export default function ProfileModal({
 
         {person.points !== undefined && (
           <div className="absolute top-3 left-3 flex items-center gap-1 bg-pale-green-light px-3 py-1.5 rounded-full backdrop-blur-sm border border-pale-green">
-            <span className="material-symbols-outlined text-primary text-[20px] fill-1">bolt</span>
+            <span className="material-symbols-outlined text-primary text-[20px] fill-1">
+              bolt
+            </span>
             <p className="text-green-900 text-sm font-bold leading-normal tracking-[0.015em]">
               {person.points.toLocaleString()}
             </p>
           </div>
         )}
 
-        <p className="text-sm text-slate-600 leading-relaxed">
-          {person.linkedinSummary ?? "No description available."}
-        </p>
-        {person.linkedinUrl && (
-  <a
-    href={person.linkedinUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-[#0077b5] hover:underline"
-  >
-    <svg
-      className="w-4 h-4 fill-current"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-    From LinkedIn
-  </a>
-)}
+        {person.linkedinUrl ? (
+          <p className="text-sm text-slate-600 leading-relaxed">
+            {person.linkedinSummary}
+            <br />
+            <small>
+              Generated from{" "}
+              <a
+                href={person.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600"
+              >
+                LinkedIn profile
+              </a>
+            </small>
+          </p>
+        ) : (
+          <p className="text-sm text-slate-600 leading-relaxed">
+            No description available.
+          </p>
+        )}
       </div>
     </div>
   );
