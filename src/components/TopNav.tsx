@@ -11,7 +11,7 @@ export default async function TopNav({ title }: { title: string }) {
   const profilePicture = dbUser?.profilePicture || user.picture;
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-pale-green transition-colors duration-300">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-pale-green transition-colors duration-300" style={{paddingTop: 'env(safe-area-inset-top)'}}>
       <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto w-full">
         <Link href="/profile" className="flex size-12 shrink-0 items-center">
           <div
