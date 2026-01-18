@@ -3,6 +3,6 @@ export type GalleryItem = {
   imageUrl: string;
   name: string;
   dateLabel: string;
-  pointsLabel: string;
+  points: number;
   status?: "verified" | "pending";
 };

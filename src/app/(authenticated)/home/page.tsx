@@ -2,11 +2,12 @@ import BottomNav from "@/components/BottomNav";
 import TopNav from "@/components/TopNav";
 import Link from "next/link";
 import GalleryGrid from "@/components/gallery/GalleryGrid";
+import { getUserByEmail } from "@/lib/mongodb";
 
 export default async function Gallery() {
   return (
     <>
-      <TopNav />
+      <TopNav title="Gallery" />
       <GalleryGrid />
       {/* <main className="flex-1 max-w-md mx-auto w-full pb-24">
         <div className="grid grid-cols-2 gap-3 p-4">

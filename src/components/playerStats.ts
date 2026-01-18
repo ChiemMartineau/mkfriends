@@ -3,4 +3,5 @@ export const PLAYER_STATS = {
   teamRank: 4,
   nbTeamMembers: 4,
   points: 1250,
+  teamName: "Team Hackers",
 };

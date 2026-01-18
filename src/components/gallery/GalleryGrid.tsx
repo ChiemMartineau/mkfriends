@@ -1,5 +1,10 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import GalleryCard from "./GalleryCard";
+import ImageModal from "./ImageModal";
 import { GALLERY_ITEMS } from "./galleryData";
+import { GalleryItem } from "./types";
 import Link from "next/link";
 
 function getFeaturedIndices(totalItems: number) {
@@ -18,7 +23,16 @@ function getFeaturedIndices(totalItems: number) {
 }
 
 export default function GalleryGrid() {
-  const featuredIndices = getFeaturedIndices(GALLERY_ITEMS.length);
+  // Initialize featured indices only on client to avoid hydration mismatch
+  const [featuredIndices, setFeaturedIndices] = useState<Set<number>>(
+    new Set(),
+  );
+  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
+
+  useEffect(() => {
+    // Calculate featured indices only on client side
+    setFeaturedIndices(getFeaturedIndices(GALLERY_ITEMS.length));
+  }, []);
 
   return (
     <main className="flex-1 max-w-md mx-auto w-full pb-24">
@@ -33,7 +47,11 @@ export default function GalleryGrid() {
               key={item.id}
               style={isFeatured ? { gridColumn: "1 / -1" } : {}}
             >
-              <GalleryCard item={item} isFeatured={isFeatured} />
+              <GalleryCard
+                item={item}
+                isFeatured={isFeatured}
+                onClick={() => setSelectedItem(item)}
+              />
             </div>
           );
         })}
@@ -52,6 +70,8 @@ export default function GalleryGrid() {
           </p>
         </Link>
       </div>
+
+      <ImageModal item={selectedItem} onClose={() => setSelectedItem(null)} />
     </main>
   );
 }

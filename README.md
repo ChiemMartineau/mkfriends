@@ -9,7 +9,6 @@ sudo apt update
 # Clone the deepface repo:
 git clone https://github.com/serengil/deepface.git
 cd deepface
-pip install -e .
 
 # Setup Python:
 sudo apt install python3-full python3-venv python3-pip
@@ -23,5 +22,12 @@ sudo apt install -y libgl1 libglib2.0-0
 
 # Run deepface as a service:
 cd scripts
-./service.sh
+mv service.sh deepface-service.sh
+nohup ./deepface-service.sh > deepface.log 2>&1 &
+```
+
+To check that the process is running do:
+
+```bash
+ps aux | grep deepface-service.sh
 ```

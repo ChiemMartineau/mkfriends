@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Auth0Provider } from "@auth0/nextjs-auth0/client";
 import "./globals.css";
-
 export const metadata: Metadata = {
   title: "MkFriends",
   description: "Build fast. Connect faster.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;

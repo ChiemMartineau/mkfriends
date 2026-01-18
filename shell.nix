@@ -8,5 +8,6 @@ pkgs.mkShell {
     nodejs
     auth0-cli
     imagemagick
+    ngrok
   ];
 }

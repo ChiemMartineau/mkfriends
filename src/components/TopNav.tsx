@@ -1,24 +1,25 @@
-"use client";
-import { usePathname } from "next/navigation";
-import { PLAYER_STATS } from "./player_stats";
+import { PLAYER_STATS } from "./playerStats";
+import Link from "next/link";
+import { auth0 } from "@/lib/auth0";
 
-export default function TopNav() {
-  const pathname = usePathname();
-
-  const title = pathname === "/leaderboard" ? "Leaderboard" : "Gallery";
+export default async function TopNav({ title }: { title: string }) {
+  const session = await auth0.getSession();
+  const user = session!.user!;
+  const profilePicture = user.picture;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-pale-green transition-colors duration-300">
       <div className="flex items-center p-4 pb-2 justify-between max-w-md mx-auto w-full">
-        <div className="flex size-12 shrink-0 items-center">
+        <Link href="/profile" className="flex size-12 shrink-0 items-center">
           <div
             className="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary shadow-sm"
             style={{
-              backgroundImage:
-                'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBXvm7N103P2dPKTCQ-xJhPST49OA_5MzxiZWfIi_rh6Bgqf6iwpKegIrf1xP-BHJvGE-RAL_f7Hv6yOgAWKG_JO7Wqx_z-3Tiy6LPIJBp7jDgWbykbGWFP9IVJWuJ2jxOnJauDzOLCcoYBq_lWR5Yo5Fx2gEOxreLdpJWrNre3QjT10EAr6ah8YUf9CcNw9YY7O_NjhgIeYacTbyVrPWUAMCnGgRPZ8zhUTUSZCN2KKmHt77tbZGjpdVgTl3HIJt4Sa0EJuPvxnC-7")',
+              backgroundImage: profilePicture
+                ? `url("${profilePicture}")`
+                : 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27128%27 height=%27128%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%23d1d5db%27/%3E%3Cpath d=%27M50 45c7.5 0 13.64-6.14 13.64-13.64S57.5 17.72 50 17.72s-13.64 6.14-13.64 13.64S42.5 45 50 45zm0 6.82c-9.09 0-27.28 4.56-27.28 13.64v3.41c0 1.88 1.53 3.41 3.41 3.41h47.74c1.88 0 3.41-1.53 3.41-3.41v-3.41c0-9.08-18.19-13.64-27.28-13.64z%27 fill=%27%23fff%27/%3E%3C/svg%3E")',
             }}
           ></div>
-        </div>
+        </Link>
         <h2 className="text-xl font-extrabold leading-tight tracking-[-0.015em] flex-1 text-center text-green-900">
           {title}
         </h2>

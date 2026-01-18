@@ -20,18 +20,21 @@ const s3 = new S3Client({
   },
 });
 
-async function uploadImage(key: string, imageBlob: Blob) {
+export async function uploadImage(key: string, imageBlob: Blob) {
   const ALLOWED = ["image/png", "image/jpeg", "image/webp", "image/avif"];
 
   if (!ALLOWED.includes(imageBlob.type)) {
     throw new Error("Invalid image type");
   }
 
+  const arrayBuffer = await imageBlob.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
   await s3.send(
     new PutObjectCommand({
       Bucket: "mkfriends",
       Key: key,
-      Body: imageBlob,
+      Body: buffer,
       ContentType: imageBlob.type,
       ACL: "public-read", // or omit for private
       CacheControl: "public, max-age=31536000",
@@ -39,7 +42,7 @@ async function uploadImage(key: string, imageBlob: Blob) {
   );
 }
 
-async function getImage(key: string): Promise<Blob> {
+export async function getImage(key: string): Promise<Blob> {
   const response = await s3.send(
     new GetObjectCommand({
       Bucket: "mkfriends",
@@ -55,6 +58,6 @@ async function getImage(key: string): Promise<Blob> {
   });
 }
 
-function getPublicUrl(key: string) {
+export function getPublicUrl(key: string) {
   return `https://mkfriends.tor1.cdn.digitaloceanspaces.com/${key}`;
 }

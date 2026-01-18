@@ -3,14 +3,17 @@ import { GalleryItem } from "./types";
 export default function GalleryCard({
   item,
   isFeatured,
+  onClick,
 }: {
   item: GalleryItem;
   isFeatured?: boolean;
+  onClick?: () => void;
 }) {
   const isPending = item.status === "pending";
 
   return (
     <div
+      onClick={onClick}
       className={`relative group cursor-pointer overflow-hidden rounded-2xl shadow-sm transition-transform active:scale-[0.98] border-2 border-pale-green bg-white ${
         isFeatured ? "w-full aspect-3/4" : "aspect-3/4"
       }`}
@@ -38,9 +41,9 @@ export default function GalleryCard({
 
       <div className="absolute bottom-0 left-0 w-full p-3.5 flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <p className="text-white text-base font-bold leading-tight line-clamp-1">
+          {/* <p className="text-white text-base font-bold leading-tight line-clamp-1">
             {item.name}
-          </p>
+          </p> */}
           <span className="text-primary font-black text-xs bg-white/90 px-1.5 py-0.5 rounded shadow-sm">
             +{item.points} pts
           </span>
