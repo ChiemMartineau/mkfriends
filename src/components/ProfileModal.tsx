@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 export type ProfileModalData = {
   id?: string;
   name: string;
@@ -17,6 +19,26 @@ export default function ProfileModal({
   person: ProfileModalData | null;
   onClose: () => void;
 }) {
+    useEffect(() => {
+    if (!person) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+
+    // Optional: prevent layout shift when scrollbar disappears
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    if (scrollBarWidth > 0) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+    };
+  }, [person]);
   // useEffect(() => {
   //   if (person) document.body.style.overflow = "hidden";
   //   return () => {
