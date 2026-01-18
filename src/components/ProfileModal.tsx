@@ -19,7 +19,7 @@ export default function ProfileModal({
   person: ProfileModalData | null;
   onClose: () => void;
 }) {
-    useEffect(() => {
+  useEffect(() => {
     if (!person) return;
 
     const previousOverflow = document.body.style.overflow;
@@ -81,16 +81,36 @@ export default function ProfileModal({
 
         {person.points !== undefined && (
           <div className="absolute top-3 left-3 flex items-center gap-1 bg-pale-green-light px-3 py-1.5 rounded-full backdrop-blur-sm border border-pale-green">
-            <span className="material-symbols-outlined text-primary text-[20px] fill-1">bolt</span>
+            <span className="material-symbols-outlined text-primary text-[20px] fill-1">
+              bolt
+            </span>
             <p className="text-green-900 text-sm font-bold leading-normal tracking-[0.015em]">
               {person.points.toLocaleString()}
             </p>
           </div>
         )}
 
-        <p className="text-sm text-slate-600 leading-relaxed">
-          {person.linkedinSummary ?? "No description available."}
-        </p>
+        {person.linkedinUrl ? (
+          <p className="text-sm text-slate-600 leading-relaxed">
+            {person.linkedinSummary}
+            <br />
+            <small>
+              Generated from{" "}
+              <a
+                href={person.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600"
+              >
+                LinkedIn profile
+              </a>
+            </small>
+          </p>
+        ) : (
+          <p className="text-sm text-slate-600 leading-relaxed">
+            No description available.
+          </p>
+        )}
       </div>
     </div>
   );

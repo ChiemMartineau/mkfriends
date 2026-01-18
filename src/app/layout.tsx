@@ -13,7 +13,6 @@ export const metadata: Metadata = {
   icons: {
     apple: "/apple-touch-icon.png",
   },
-  themeColor: "#FFB6C1",
 };
 
 export default async function RootLayout({

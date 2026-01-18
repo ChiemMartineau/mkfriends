@@ -4,10 +4,11 @@ import { revalidatePath } from "next/cache";
 
 import { auth0 } from "@/lib/auth0";
 import { updateUserProfile, getUserByEmail } from "@/lib/mongodb";
-import { getLinkedinProfileImageURL, summarizeLinkedinProfile } from "@/lib/gumloop"
+import { summarizeLinkedinProfile } from "@/lib/gumloop";
 
 export async function updateProfileAction(formData: FormData) {
-  const linkedinUrl = (formData.get("linkedinUrl") as string | null)?.trim() || "";
+  const linkedinUrl =
+    (formData.get("linkedinUrl") as string | null)?.trim() || "";
 
   const session = await auth0.getSession();
   const email = session?.user.email;
@@ -18,7 +19,8 @@ export async function updateProfileAction(formData: FormData) {
 
   // If linkedin URL hasn't changed, skip summary generation
   const existingUser = await getUserByEmail(email);
-  const urlChanged = linkedinUrl && linkedinUrl !== (existingUser?.linkedinUrl || "");
+  const urlChanged =
+    linkedinUrl && linkedinUrl !== (existingUser?.linkedinUrl || "");
 
   let linkedinSummary: string | undefined = undefined;
   if (urlChanged) {
