@@ -7,17 +7,21 @@ import crypto from "crypto";
 import { getAllUsers, updateUser, insertSelfie, ObjectId } from "@/lib/mongodb";
 
 import { deepface } from "@/lib/deepface";
+import { checkImageIsSelfie } from "@/lib/genai";
 
 function getExtensionFromBlob(blob: Blob): string | null {
   if (!blob.type) return null;
-  return blob.type.split('/')[1];
+  return blob.type.split("/")[1];
 }
 
 export async function uploadImage(blob: Blob) {
   const session = await auth0.getSession();
   console.log(session?.user);
 
-  //console.log(await checkImageIsSelfie(blob));
+  const isValidSelfie = await checkImageIsSelfie(blob);
+  if (!isValidSelfie) {
+    console.log("The uploaded image does not contain real people.");
+  }
 
   const key = `selfies/${crypto.randomUUID()}.${getExtensionFromBlob(blob)}`;
   const s3UploadPromise = await s3.uploadImage(key, blob);
@@ -29,24 +33,24 @@ export async function uploadImage(blob: Blob) {
 
   for (const user of users) {
     console.log(s3.getPublicUrl(key), user.profilePicture);
-      const isVerified = await deepface.verify(
-        s3.getPublicUrl(key),
-        user.profilePicture,
-      );
+    const isVerified = await deepface.verify(
+      s3.getPublicUrl(key),
+      user.profilePicture,
+    );
 
-      console.log("Deepface result with user" + user.email + ":", isVerified);
-      if (isVerified) {
-        matchedUsers.push(user._id);
-      }
+    console.log("Deepface result with user" + user.email + ":", isVerified);
+    if (isVerified) {
+      matchedUsers.push(user._id);
+    }
   }
 
   for (const userId of matchedUsers) {
     for (const otherUserId of matchedUsers) {
-      if (userId.equals(otherUserId)) continue
-      
-      const user = users.find(u => u._id.equals(userId));
+      if (userId.equals(otherUserId)) continue;
 
-      if (user && !user.usersSeen.some(id => id.equals(otherUserId))) {
+      const user = users.find((u) => u._id.equals(userId));
+
+      if (user && !user.usersSeen.some((id) => id.equals(otherUserId))) {
         user.usersSeen.push(otherUserId);
         user.score += 10;
       }
@@ -54,7 +58,7 @@ export async function uploadImage(blob: Blob) {
   }
 
   for (const user of users) {
-    if (matchedUsers.some(id => id.equals(user._id))) {
+    if (matchedUsers.some((id) => id.equals(user._id))) {
       await updateUser(user);
     }
   }

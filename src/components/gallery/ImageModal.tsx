@@ -6,6 +6,7 @@ import PeopleList from "./PeopleList";
 import PeopleRow from "./PeopleRow";
 import ProfileModal, { ProfileModalData } from "../ProfileModal";
 import { useState } from "react";
+import { handleReport } from "./actions";
 
 type ImageModalProps = {
   item: GalleryItem | null;
@@ -13,7 +14,9 @@ type ImageModalProps = {
 };
 
 export default function ImageModal({ item, onClose }: ImageModalProps) {
-  const [selectedPerson, setSelectedPerson] = useState<ProfileModalData | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<ProfileModalData | null>(
+    null,
+  );
 
   useEffect(() => {
     if (item) {
@@ -51,10 +54,10 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
 
   if (!item) return null;
 
+  const filename = `${item.name.replace(/\s+/g, "_")}.jpg`;
+  const downloadUrl = `/api/download?url=${encodeURIComponent(item.imageUrl)}&filename=${encodeURIComponent(filename)}`;
+
   const handleDownload = () => {
-    const filename = `${item.name.replace(/\s+/g, "_")}.jpg`;
-    const downloadUrl = `/api/download?url=${encodeURIComponent(item.imageUrl)}&filename=${encodeURIComponent(filename)}`;
-    
     const a = document.createElement("a");
     a.href = downloadUrl;
     a.download = filename;
@@ -101,7 +104,7 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
         {/* Download button */}
         <button
           onClick={handleDownload}
-          className="absolute top-4 right-4 flex items-center justify-center size-10 rounded-full bg-black/60 border border-white/40 text-white backdrop-blur-md hover:bg-black/80 transition-all z-10"
+          className="absolute top-4 right-17 flex items-center justify-center size-10 rounded-full bg-black/60 border border-white/40 text-white backdrop-blur-md hover:bg-black/80 transition-all z-10"
           aria-label="Download"
         >
           <svg
@@ -119,6 +122,29 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
           </svg>
         </button>
 
+        {/* Report button */}
+        <button
+          onClick={() => handleReport(downloadUrl)}
+          className="absolute top-4 right-4 flex items-center justify-center size-10 rounded-full bg-black/60 border border-white/40 text-white backdrop-blur-md hover:bg-black/80 transition-all z-10"
+          aria-label="Report"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </button>
+
         {/* Image */}
         <img
           src={item.imageUrl}
@@ -129,32 +155,35 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
 
         {/* Info bar below image */}
         <div className="w-full text-center text-white mt-3">
-      {/* <p className="text-sm text-white">
+          {/* <p className="text-sm text-white">
         +{item.points} pts • {item.dateLabel}
       </p> */}
 
-      {/* People list directly under date */}
-      {item.people && item.people.length > 0 && (
-        <div className="mt-3">
-          {/* <PeopleList people={item.people} /> */}
-          <PeopleRow
-            people={item.people}
-            onPersonClick={(p) =>
-              setSelectedPerson({
-                id: p.id,
-                name: p.name,
-                avatarUrl: p.avatarUrl,
-                groupName: p.groupName,
-                linkedinSummary: p.linkedinSummary,
-                linkedinUrl: p.linkedinUrl,
-                points: p.points,
-              })
-            }
-          />
+          {/* ✅ People list directly under date */}
+          {item.people && item.people.length > 0 && (
+            <div className="mt-3">
+              {/* <PeopleList people={item.people} /> */}
+              <PeopleRow
+                people={item.people}
+                onPersonClick={(p) =>
+                  setSelectedPerson({
+                    id: p.id,
+                    name: p.name,
+                    avatarUrl: p.avatarUrl,
+                    groupName: p.groupName,
+                    linkedinSummary: p.linkedinSummary,
+                    linkedinUrl: p.linkedinUrl,
+                    points: p.points,
+                  })
+                }
+              />
+            </div>
+          )}
         </div>
-      )}
-    </div>
-      <ProfileModal person={selectedPerson} onClose={() => setSelectedPerson(null)} />
+        <ProfileModal
+          person={selectedPerson}
+          onClose={() => setSelectedPerson(null)}
+        />
       </div>
     </div>
   );
