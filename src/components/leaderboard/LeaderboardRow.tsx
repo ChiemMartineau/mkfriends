@@ -76,7 +76,7 @@ export default function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
 
       <div className="text-right z-10">
         <p className={xpClass}>{formatXp(entry.xp)}</p>
-        <p className="text-slate-400 text-[10px] uppercase">XP Points</p>
+        <p className="text-slate-400 text-[10px] uppercase">Points</p>
       </div>
     </div>
   );

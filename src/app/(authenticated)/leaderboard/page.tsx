@@ -41,8 +41,7 @@ export default async function Leaderboard() {
         memberAvatars,
         xp: totalScore,
         rank: 0,
-        isUserTeam:
-          userGroup ? group._id.equals(userGroup._id) : false,
+        isUserTeam: userGroup ? group._id.equals(userGroup._id) : false,
       };
     }),
   );
@@ -57,9 +56,7 @@ export default async function Leaderboard() {
 
   const userEntry = sortedEntries.find((e) => e.isUserTeam);
 
-  const teamMembersRaw = userGroup
-    ? await getUsersForGroup(userGroup._id)
-    : [];
+  const teamMembersRaw = userGroup ? await getUsersForGroup(userGroup._id) : [];
 
   const teamMembers: TeamMember[] = teamMembersRaw.map((m) => ({
     id: m._id.toString(),
@@ -75,7 +72,8 @@ export default async function Leaderboard() {
   }));
 
   const teamName = userGroup?.name || "My Team";
-  const teamRank = userEntry?.rank || (sortedEntries.length ? sortedEntries.length : 0);
+  const teamRank =
+    userEntry?.rank || (sortedEntries.length ? sortedEntries.length : 0);
   const teamPoints = userEntry?.xp || 0;
   const teamSize = teamMembers.length;
 
@@ -110,7 +108,7 @@ export default async function Leaderboard() {
                   {teamPoints.toLocaleString()}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider text-primary/80 font-bold">
-                  XP Points
+                  Points
                 </span>
               </div>
               <div className="bg-white rounded-2xl p-3 flex flex-col items-center justify-center border border-divider-green shadow-sm">
