@@ -11,7 +11,7 @@ const videoConstraints: MediaStreamConstraints = {
 };
 
 type CameraCaptureProps = {
-  onSubmit?: (blob: Blob) => Promise<void>;
+  onSubmit?: (blob: Blob) => Promise<unknown>;
 };
 
 export default function CameraCapture({ onSubmit }: CameraCaptureProps) {

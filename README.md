@@ -61,13 +61,23 @@ For /etc/nginx/sites-available/reverse-proxy :
 ```
 server {
     listen 80;
-    server_name example.com www.example.com;
 
-    root /var/www/example.com/html;
-    index index.html;
+    server_name _;  # catch-all for any IP
 
     location / {
-        try_files $uri $uri/ =404;
+        proxy_pass http://127.0.0.1:5005;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
     }
 }
+```
+
+## PM2
+```bash
+pm2 start npm --name "mkfriends" -- start
+pm2 status
+pm2 logs hackathon-app
 ```

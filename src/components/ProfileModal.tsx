@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 export type ProfileModalData = {
   id?: string;
   name: string;

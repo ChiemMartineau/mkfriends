@@ -47,7 +47,7 @@ export const deepface = {
   verify,
 };
 
-async function verify(image1Url: string, image2Url: string): Promise<Boolean> {
+async function verify(image1Url: string, image2Url: string): Promise<boolean> {
   const reqBody = JSON.stringify({
       model_name: models[6],
       detector_backend: backends[5],

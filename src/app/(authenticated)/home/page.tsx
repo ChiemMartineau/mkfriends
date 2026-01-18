@@ -1,6 +1,5 @@
 import BottomNav from "@/components/BottomNav";
 import TopNav from "@/components/TopNav";
-import Link from "next/link";
 import GalleryGrid from "@/components/gallery/GalleryGrid";
 import { auth0 } from "@/lib/auth0";
 import { getUserByEmail, getSelfiesForUser, getUserById, getGroupForUser } from "@/lib/mongodb";
@@ -11,7 +10,7 @@ export default async function Gallery() {
   const session = await auth0.getSession();
   const user = session?.user;
 
-  let galleryItems: GalleryItem[] = [];
+  const galleryItems: GalleryItem[] = [];
 
   if (user?.email) {
     const dbUser = await getUserByEmail(user.email);

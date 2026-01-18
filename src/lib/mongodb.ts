@@ -1,4 +1,3 @@
-import { get } from "http";
 import { MongoClient, ObjectId } from "mongodb";
 
 export { ObjectId } from "mongodb";

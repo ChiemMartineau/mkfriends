@@ -1,4 +1,3 @@
-import { PLAYER_STATS } from "./playerStats";
 import Link from "next/link";
 import { auth0 } from "@/lib/auth0";
 import { getUserByEmail } from "@/lib/mongodb";

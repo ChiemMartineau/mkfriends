@@ -1,11 +1,6 @@
 "use server";
 
-import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
-
 import { auth0 } from "@/lib/auth0";
-import { checkImageIsSelfie } from "@/lib/genai";
 
 import * as s3 from "@/lib/s3";
 import crypto from "crypto";
@@ -27,7 +22,7 @@ export async function uploadImage(blob: Blob) {
   const key = `selfies/${crypto.randomUUID()}.${getExtensionFromBlob(blob)}`;
   const s3UploadPromise = await s3.uploadImage(key, blob);
 
-  let matchedUsers: ObjectId[] = [];
+  const matchedUsers: ObjectId[] = [];
   const users = await getAllUsers();
 
   await s3UploadPromise;

@@ -1,13 +1,7 @@
 "use server";
 
-import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
-
 import { auth0 } from "@/lib/auth0";
 import { checkImageIsSelfie } from "@/lib/genai";
-
-import { GumloopClient } from "gumloop";
 
 import * as s3 from "@/lib/s3";
 import crypto from "crypto";

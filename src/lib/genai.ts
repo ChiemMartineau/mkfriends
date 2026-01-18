@@ -7,7 +7,7 @@ import { z } from "zod";
 
 const ai = new GoogleGenAI({});
 
-export async function checkImageIsSelfie(imageBlob: Blob): Promise<Boolean> {
+export async function checkImageIsSelfie(imageBlob: Blob): Promise<boolean> {
     const imageFile = await ai.files.upload({
         file: imageBlob,
         config: { mimeType: imageBlob.type },

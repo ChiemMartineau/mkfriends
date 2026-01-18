@@ -8,12 +8,12 @@ export default async function ChooseGroup() {
   const session = await auth0.getSession();
   if (!session?.user.email) redirect("/");
 
-  const user = await upsertUser({
+  await upsertUser({
     email: session.user.email,
     name: session.user.name,
     profilePicture: session.user.picture,
   });
-  // if (user?.group) redirect("/home");
+  if (session.user.group) redirect("/home");
 
   const allGroups = await getAllGroups();
   const plainGroups = allGroups.map((group) => ({
