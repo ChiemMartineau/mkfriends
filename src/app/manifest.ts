@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Build fast. Connect faster.",
     start_url: "/home",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#FFB6C1",
     theme_color: "#ff6b7a",
     icons: [
       {
