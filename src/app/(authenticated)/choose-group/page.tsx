@@ -8,11 +8,11 @@ export default async function ChooseGroup() {
   const session = await auth0.getSession();
   if (!session?.user.email) redirect("/");
 
-  // const user = await upsertUser({
-  //   email: session.user.email,
-  //   name: session.user.name,
-  //   profilePicture: session.user.picture,
-  // });
+  const user = await upsertUser({
+    email: session.user.email,
+    name: session.user.name,
+    profilePicture: session.user.picture,
+  });
   // if (user?.group) redirect("/home");
 
   const allGroups = await getAllGroups();

@@ -145,7 +145,8 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
                 name: p.name,
                 avatarUrl: p.avatarUrl,
                 groupName: p.groupName,
-                description: "Profile details coming soon.",
+                linkedinSummary: p.linkedinSummary,
+                linkedinUrl: p.linkedinUrl,
                 points: p.points,
               })
             }

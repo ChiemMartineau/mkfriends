@@ -37,6 +37,8 @@ export default async function Gallery() {
                     isYou: false,
                     groupName: personGroup?.name,
                     points: personUser.score || 0,
+                    linkedinSummary: personUser.linkedinSummary,
+                    linkedinUrl: personUser.linkedinUrl,
                   });
                 }
               }

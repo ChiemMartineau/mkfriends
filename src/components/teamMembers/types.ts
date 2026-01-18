@@ -5,4 +5,6 @@ export type TeamMember = {
   isYou?: boolean;
   groupName?: string;
   points?: number;
+  linkedinUrl?: string;
+  linkedinSummary?: string;
 };

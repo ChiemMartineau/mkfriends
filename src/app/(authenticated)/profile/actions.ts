@@ -36,3 +36,16 @@ export async function updateProfileAction(formData: FormData) {
 
   revalidatePath("/profile");
 }
+
+export async function updateProfilePicture(imageUrl: string) {
+  const session = await auth0.getSession();
+  const email = session?.user.email;
+
+  if (!email) {
+    throw new Error("User must be signed in to update profile picture");
+  }
+
+  await updateUserProfile(email, { profilePicture: imageUrl });
+
+  revalidatePath("/profile");
+}

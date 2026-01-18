@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { auth0 } from "@/lib/auth0";
@@ -25,7 +24,6 @@ export async function createGroupAction(formData: FormData) {
 
 	await upsertUser({ email, group: groupId });
 
-	revalidatePath("/choose-group");
 	redirect("/home");
 }
 
@@ -45,6 +43,5 @@ export async function joinGroupAction(formData: FormData) {
 
 	await upsertUser({ email, group: new ObjectId(groupId) });
 
-	revalidatePath("/choose-group");
 	redirect("/home");
 }

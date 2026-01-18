@@ -62,7 +62,10 @@ export async function upsertUser(
 export async function getSelfiesForUser(
   userId: ObjectId,
 ): Promise<SelfieDoc[]> {
-  return await selfiesCollection.find({ users: userId }).toArray();
+  return await selfiesCollection
+    .find({ users: userId })
+    .sort({ _id: -1 })
+    .toArray();
 }
 
 export async function getAllUsers(): Promise<UserDoc[]> {

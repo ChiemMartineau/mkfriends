@@ -6,10 +6,10 @@ import { getUserByEmail } from "@/lib/mongodb";
 export default async function TopNav({ title }: { title: string }) {
   const session = await auth0.getSession();
   const user = session!.user!;
-  const profilePicture = user.picture;
 
   const dbUser = await getUserByEmail(user.email!);
   const userScore = dbUser?.score || 0;
+  const profilePicture = dbUser?.profilePicture || user.picture;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-pale-green transition-colors duration-300">

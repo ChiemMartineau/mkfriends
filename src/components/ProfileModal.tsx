@@ -7,8 +7,9 @@ export type ProfileModalData = {
   name: string;
   avatarUrl: string;
   groupName?: string;
-  description?: string;
   points?: number;
+  linkedinUrl?: string;
+  linkedinSummary?: string;
 };
 
 export default function ProfileModal({
@@ -18,39 +19,12 @@ export default function ProfileModal({
   person: ProfileModalData | null;
   onClose: () => void;
 }) {
-  useEffect(() => {
-    if (person) document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [person]);
-
-  const [summary, setSummary] = useState<string>(
-    person?.description || "Summarizing LinkedIn profile..."
-  );
-
-  useEffect(() => {
-    let isCancelled = false;
-    async function loadSummary() {
-      try {
-        if (!person?.id) {
-          setSummary(person?.description || "");
-          return;
-        }
-        setSummary("Summarizing LinkedIn profile...");
-        const res = await fetch(`/api/profile-summary?userId=${encodeURIComponent(person.id)}`);
-        if (!res.ok) throw new Error("Failed to fetch summary");
-        const data = await res.json();
-        if (!isCancelled) setSummary(data.description || "");
-      } catch (e) {
-        if (!isCancelled) setSummary(person?.description || "");
-      }
-    }
-    loadSummary();
-    return () => {
-      isCancelled = true;
-    };
-  }, [person?.id]);
+  // useEffect(() => {
+  //   if (person) document.body.style.overflow = "hidden";
+  //   return () => {
+  //     document.body.style.overflow = "";
+  //   };
+  // }, [person]);
 
   if (!person) return null;
 
@@ -95,7 +69,7 @@ export default function ProfileModal({
         )}
 
         <p className="text-sm text-slate-600 leading-relaxed">
-          {summary}
+          {person.linkedinSummary ?? "No description available."}
         </p>
       </div>
     </div>

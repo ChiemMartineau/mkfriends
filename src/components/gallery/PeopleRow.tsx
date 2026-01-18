@@ -2,8 +2,8 @@ export default function PeopleRow({
   people,
   onPersonClick,
 }: {
-  people: Array<{ id: string; name: string; avatarUrl: string; isYou?: boolean; groupName?: string; points?: number }>;
-  onPersonClick?: (person: { id: string; name: string; avatarUrl: string; isYou?: boolean; groupName?: string; points?: number }) => void;
+  people: Array<{ id: string; name: string; avatarUrl: string; isYou?: boolean; groupName?: string; points?: number, linkedinSummary?: string, linkedinUrl?: string }>;
+  onPersonClick?: (person: { id: string; name: string; avatarUrl: string; isYou?: boolean; groupName?: string; points?: number, linkedinSummary?: string, linkedinUrl?: string }) => void;
 }) {
   return (
     <div className="w-full mt-4">

@@ -18,7 +18,7 @@ export default function TeamMembersSection({
         <h3 className="text-lg font-bold text-text-dark">Team Members</h3>
       </div>
 
-      <div className="flex overflow-x-auto gap-4 hide-scrollbar pr-6">
+      <div className="flex overflow-x-auto gap-4 hide-scrollbar pr-6 p-1">
         {members.map((m) => (
           <TeamMemberAvatar
             key={m.id}
@@ -29,8 +29,9 @@ export default function TeamMembersSection({
                 name: member.name,
                 avatarUrl: member.avatarUrl,
                 groupName: member.groupName,
-                description: "Profile details coming soon.",
                 points: member.points,
+                linkedinSummary: member.linkedinSummary,
+                linkedinUrl: member.linkedinUrl,
               })
             }
           />

@@ -70,6 +70,8 @@ export default async function Leaderboard() {
     isYou: currentUser ? m._id.equals(currentUser._id) : false,
     groupName: userGroup?.name,
     points: m.score || 0,
+    linkedinUrl: m.linkedinUrl,
+    linkedinSummary: m.linkedinSummary,
   }));
 
   const teamName = userGroup?.name || "My Team";

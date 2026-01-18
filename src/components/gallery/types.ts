@@ -10,5 +10,7 @@ export type GalleryItem = {
     name: string;
     avatarUrl: string;
     isYou?: boolean;
+    linkedinUrl?: string;
+    linkedinSummary?: string;
   }>;
 };

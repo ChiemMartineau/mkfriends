@@ -1,5 +1,6 @@
 import LogoutButton from "@/components/LogoutButton";
 import BackButton from "@/components/BackButton";
+import ProfilePictureEditor from "@/components/ProfilePictureEditor";
 import { auth0 } from "@/lib/auth0";
 import { getUserByEmail, getGroupForUser } from "@/lib/mongodb";
 import { redirect } from "next/navigation";
@@ -9,8 +10,7 @@ export default async function Profile() {
   const session = await auth0.getSession();
   if (!session?.user.email) redirect("/");
 
-  const user = session.user;
-  const dbUser = await getUserByEmail(user.email);
+  const dbUser = await getUserByEmail(session.user.email);
 
   if (!dbUser) {
     redirect("/");
@@ -18,8 +18,8 @@ export default async function Profile() {
 
   const group = dbUser.group ? await getGroupForUser(dbUser) : null;
 
-  const displayName = user.name;
-  const email = user.email;
+  const displayName = session.user.name;
+  const email = session.user.email;
   const profilePicture = dbUser.profilePicture;
   const teamName = group?.name || "No Team";
   const userScore = dbUser.score || 0;
@@ -45,26 +45,7 @@ export default async function Profile() {
       </header>
 
       <main className="flex-1 flex flex-col px-6 pb-40 z-10">
-        <div className="flex flex-col items-center mt-6 mb-8">
-          <div className="relative group cursor-pointer">
-            <div
-              className="h-32 w-32 rounded-full bg-slate-100 bg-center bg-cover border-4 border-white shadow-card"
-              style={{
-                backgroundImage: profilePicture
-                  ? `url("${profilePicture}")`
-                  : 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27128%27 height=%27128%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2750%27 fill=%27%23d1d5db%27/%3E%3Cpath d=%27M50 45c7.5 0 13.64-6.14 13.64-13.64S57.5 17.72 50 17.72s-13.64 6.14-13.64 13.64S42.5 45 50 45zm0 6.82c-9.09 0-27.28 4.56-27.28 13.64v3.41c0 1.88 1.53 3.41 3.41 3.41h47.74c1.88 0 3.41-1.53 3.41-3.41v-3.41c0-9.08-18.19-13.64-27.28-13.64z%27 fill=%27%23fff%27/%3E%3C/svg%3E")',
-              }}
-            />
-            <button className="absolute bottom-1 right-1 h-9 w-9 bg-melon-green hover:bg-melon-green-dark text-white rounded-full border-[3px] border-white flex items-center justify-center shadow-md transition-colors">
-              <span className="material-symbols-outlined text-[18px]">
-                edit
-              </span>
-            </button>
-          </div>
-          <p className="mt-3 text-slate-400 text-sm font-medium">
-            Tap to change photo
-          </p>
-        </div>
+        <ProfilePictureEditor currentPicture={profilePicture} />
 
         <div className="flex flex-col gap-5 mb-8">
           <div className="group">
