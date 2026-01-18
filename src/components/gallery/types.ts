@@ -5,4 +5,10 @@ export type GalleryItem = {
   dateLabel: string;
   points: number;
   status?: "verified" | "pending";
+  people?: Array<{
+    id: string;
+    name: string;
+    avatarUrl: string;
+    isYou?: boolean;
+  }>;
 };

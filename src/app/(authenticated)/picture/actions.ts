@@ -9,27 +9,13 @@ import { checkImageIsSelfie } from "@/lib/genai";
 
 import * as s3 from "@/lib/s3";
 import crypto from "crypto";
-import { getAllUsers, insertSelfie } from "@/lib/mongodb";
+import { getAllUsers, updateUser, insertSelfie, ObjectId } from "@/lib/mongodb";
 
-import fetch from "node-fetch";
 import { deepface } from "@/lib/deepface";
 
-async function imageUrlToBase64(url: string): Promise<string> {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch image: ${res.statusText}`);
-  }
-
-  const buffer = Buffer.from(await res.arrayBuffer());
-  const contentType = res.headers.get("content-type") ?? "image/jpeg";
-
-  return `data:${contentType};base64,${buffer.toString("base64")}`;
-}
-
-async function blobToBase64(blob: Blob): Promise<string> {
-  const buffer = Buffer.from(await blob.arrayBuffer());
-  const base64 = buffer.toString("base64");
-  return base64;
+function getExtensionFromBlob(blob: Blob): string | null {
+  if (!blob.type) return null;
+  return blob.type.split('/')[1];
 }
 
 export async function uploadImage(blob: Blob) {
@@ -38,20 +24,47 @@ export async function uploadImage(blob: Blob) {
 
   //console.log(await checkImageIsSelfie(blob));
 
-  const key = `/selfies/${crypto.randomUUID()}`;
-  s3.uploadImage(key, blob);
+  const key = `selfies/${crypto.randomUUID()}.${getExtensionFromBlob(blob)}`;
+  const s3UploadPromise = await s3.uploadImage(key, blob);
 
-  let users = [];
-  (await getAllUsers()).forEach(async (user) => {
-    deepface
-      .verify(
-        await blobToBase64(blob),
-        await imageUrlToBase64(user.profilePicture),
-      )
-      .then((res) => {});
-  });
+  let matchedUsers: ObjectId[] = [];
+  const users = await getAllUsers();
 
-  //await insertSelfie(key, [])
+  await s3UploadPromise;
+
+  for (const user of users) {
+    console.log(s3.getPublicUrl(key), user.profilePicture);
+      const isVerified = await deepface.verify(
+        s3.getPublicUrl(key),
+        user.profilePicture,
+      );
+
+      console.log("Deepface result with user" + user.email + ":", isVerified);
+      if (isVerified) {
+        matchedUsers.push(user._id);
+      }
+  }
+
+  for (const userId of matchedUsers) {
+    for (const otherUserId of matchedUsers) {
+      if (userId.equals(otherUserId)) continue
+      
+      const user = users.find(u => u._id.equals(userId));
+
+      if (user && !user.usersSeen.some(id => id.equals(otherUserId))) {
+        user.usersSeen.push(otherUserId);
+        user.score += 10;
+      }
+    }
+  }
+
+  for (const user of users) {
+    if (matchedUsers.some(id => id.equals(user._id))) {
+      await updateUser(user);
+    }
+  }
+
+  await insertSelfie(key, matchedUsers);
 
   return { url: s3.getPublicUrl(key) };
 }

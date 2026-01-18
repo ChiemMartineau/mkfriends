@@ -6,9 +6,9 @@ const gum = new GumloopClient({
   userId: "LDL5isDwqOWJ6XqMEcGNzdyDJ9F2",
 });
 
-export async function summarizeLinkedinProfile(linkedinProfile: string) {
+export async function summarizeLinkedinProfile(linkedinProfileURL: string) {
   const output = await gum.runFlow("qv9FmRwosJiCgwZWSCNmwR", {
-    linkedinProfile,
+    linkedinProfileURL,
   });
 
   const summarySchema = z.object({
@@ -16,4 +16,17 @@ export async function summarizeLinkedinProfile(linkedinProfile: string) {
   });
 
   return summarySchema.parse(output).linkedinSummary;
+}
+
+export async function getLinkedinProfileImageURL(linkedinProfileURL: string) {
+  console.log(linkedinProfileURL);
+  const output = await gum.runFlow("nWZG8PmPvKyJmo3TQAooRq", {
+    linkedinProfileURL,
+  });
+
+  const responseSchema = z.object({
+    linkedinProfilePicture: z.string(),
+  });
+
+  return responseSchema.parse(output).linkedinProfilePicture;
 }

@@ -40,24 +40,6 @@ export default function GalleryCard({
       </div> */}
 
       <div className="absolute bottom-0 left-0 w-full p-3.5 flex flex-col gap-1">
-        <div className="flex items-center justify-between">
-          {/* <p className="text-white text-base font-bold leading-tight line-clamp-1">
-            {item.name}
-          </p> */}
-          <span className="text-primary font-black text-xs bg-white/90 px-1.5 py-0.5 rounded shadow-sm">
-            +{item.points} pts
-          </span>
-          {/* {isPending ? (
-            <span className="text-gray-400 bg-white/90 px-1.5 py-0.5 rounded shadow-sm text-xs font-bold italic">
-              +{item.points} pts
-            </span>
-          ) : (
-            <span className="text-primary font-black text-xs bg-white/90 px-1.5 py-0.5 rounded shadow-sm">
-              +{item.points} pts
-            </span>
-          )} */}
-        </div>
-
         <p className="text-gray-200 text-xs font-medium">{item.dateLabel}</p>
       </div>
     </div>

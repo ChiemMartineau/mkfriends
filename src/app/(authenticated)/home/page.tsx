@@ -2,13 +2,64 @@ import BottomNav from "@/components/BottomNav";
 import TopNav from "@/components/TopNav";
 import Link from "next/link";
 import GalleryGrid from "@/components/gallery/GalleryGrid";
-import { getUserByEmail } from "@/lib/mongodb";
+import { auth0 } from "@/lib/auth0";
+import { getUserByEmail, getSelfiesForUser, getUserById, getGroupForUser } from "@/lib/mongodb";
+import { getPublicUrl } from "@/lib/s3";
+import { GalleryItem } from "@/components/gallery/types";
 
 export default async function Gallery() {
+  const session = await auth0.getSession();
+  const user = session?.user;
+
+  let galleryItems: GalleryItem[] = [];
+
+  if (user?.email) {
+    const dbUser = await getUserByEmail(user.email);
+    if (dbUser) {
+      const selfies = await getSelfiesForUser(dbUser._id);
+
+      for (const selfie of selfies) {
+        // Get user info for the first user in the selfie (typically the person who uploaded it)
+        if (selfie.users.length > 0) {
+          const firstUser = await getUserById(selfie.users[0]);
+          if (firstUser) {
+            // Get all people in the selfie except the current user
+            const people = [];
+            for (const userId of selfie.users) {
+              if (!userId.equals(dbUser._id)) {
+                const personUser = await getUserById(userId);
+                if (personUser) {
+                  const personGroup = await getGroupForUser(personUser);
+                  people.push({
+                    id: personUser._id.toString(),
+                    name: personUser.name || "Unknown",
+                    avatarUrl: personUser.profilePicture || "",
+                    isYou: false,
+                    groupName: personGroup?.name,
+                    points: personUser.score || 0,
+                  });
+                }
+              }
+            }
+
+            galleryItems.push({
+              id: selfie._id.toString(),
+              imageUrl: getPublicUrl(selfie.url),
+              name: firstUser.name || "Unknown",
+              dateLabel: "Recent",
+              points: 50,
+              people: people,
+            });
+          }
+        }
+      }
+    }
+  }
+
   return (
     <>
       <TopNav title="Gallery" />
-      <GalleryGrid />
+      <GalleryGrid items={galleryItems} />
       {/* <main className="flex-1 max-w-md mx-auto w-full pb-24">
         <div className="grid grid-cols-2 gap-3 p-4">
           <div className="relative group cursor-pointer overflow-hidden rounded-2xl aspect-[3/4] shadow-sm transition-transform active:scale-[0.98] border-2 border-pale-green bg-white">

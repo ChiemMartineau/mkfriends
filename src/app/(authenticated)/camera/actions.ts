@@ -18,7 +18,7 @@ export async function uploadImage(blob: Blob) {
 
   console.log(await checkImageIsSelfie(blob));
 
-  const key = `/selfies/${crypto.randomUUID()}`;
+  const key = `selfies/${crypto.randomUUID()}`;
   s3.uploadImage(key, blob);
 
   return { url: s3.getPublicUrl(key) };

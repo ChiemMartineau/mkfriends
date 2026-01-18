@@ -25,6 +25,8 @@ export type UserDoc = {
   usersSeen: ObjectId[];
   score: number;
   group: ObjectId;
+  linkedinUrl?: string;
+  linkedinSummary?: string;
 };
 const usersCollection = db.collection<UserDoc>("users");
 
@@ -37,6 +39,10 @@ const selfiesCollection = db.collection<SelfieDoc>("selfies");
 
 export async function getUserByEmail(email: string): Promise<UserDoc | null> {
   return await usersCollection.findOne({ email });
+}
+
+export async function getUserById(id: ObjectId): Promise<UserDoc | null> {
+  return await usersCollection.findOne({ _id: id });
 }
 
 export async function upsertUser(
@@ -63,6 +69,10 @@ export async function getAllUsers(): Promise<UserDoc[]> {
   return await usersCollection.find().toArray();
 }
 
+export async function getUsersForGroup(groupId: ObjectId): Promise<UserDoc[]> {
+  return await usersCollection.find({ group: groupId }).toArray();
+}
+
 export async function getAllGroups(): Promise<GroupDoc[]> {
   return await groupsCollection.find().toArray();
 }
@@ -84,4 +94,23 @@ export async function insertSelfie(
 
 export async function insertGroup(group: GroupDoc): Promise<void> {
   await groupsCollection.insertOne(group);
+}
+
+export async function updateUserProfile(
+  email: string,
+  updates: { linkedinUrl?: string, profilePicture?: string, linkedinSummary?: string },
+): Promise<UserDoc | null> {
+  await usersCollection.updateOne(
+    { email },
+    { $set: updates },
+  );
+  return await getUserByEmail(email);
+}
+
+export async function updateUser(user: UserDoc): Promise<UserDoc | null> {
+  await usersCollection.replaceOne(
+    { _id: user._id },
+    user,
+  );
+  return await usersCollection.findOne({ _id: user._id });
 }

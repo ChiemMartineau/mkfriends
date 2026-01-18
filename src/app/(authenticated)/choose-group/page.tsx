@@ -1,49 +1,26 @@
-import BackButton from "@/components/BackButton";
-import CreateGroup from "@/components/chooseGroup/CreateGroup";
-import SearchGroup from "@/components/chooseGroup/SearchGroup";
+import CreateGroup from "./CreateGroup";
+import JoinGroup from "./JoinGroup";
 import { auth0 } from "@/lib/auth0";
-import { upsertUser, ObjectId } from "@/lib/mongodb";
+import { upsertUser, getAllGroups } from "@/lib/mongodb";
 import { redirect } from "next/navigation";
-
-const teams = [
-  {
-    name: "Watermelon Warriors",
-    rank: "Rank #1 	0 2.4k Members",
-    icon: "eco",
-    gradient: "from-accent to-emerald-400",
-    shadow: "shadow-soft-green",
-    hoverBorder: "hover:border-accent/50",
-    hoverShadow: "hover:shadow-soft-green",
-  },
-  {
-    name: "Team Alpha",
-    rank: "Rank #2 	0 1.8k Members",
-    icon: "local_fire_department",
-    gradient: "from-primary to-rose-400",
-    shadow: "shadow-soft-pink",
-    hoverBorder: "hover:border-primary/50",
-    hoverShadow: "hover:shadow-soft-pink",
-  },
-  {
-    name: "The Seeds",
-    rank: "Rank #12 	0 450 Members",
-    icon: "bolt",
-    gradient: "from-slate-200 to-slate-200",
-    shadow: "shadow-card",
-    hoverBorder: "hover:border-slate-300",
-    hoverShadow: "hover:shadow-card",
-  },
-];
 
 export default async function ChooseGroup() {
   const session = await auth0.getSession();
   if (!session?.user.email) redirect("/");
 
-  await upsertUser({
-    email: session.user.email,
-    name: session.user.name,
-    profilePicture: session.user.picture,
-  });
+  // const user = await upsertUser({
+  //   email: session.user.email,
+  //   name: session.user.name,
+  //   profilePicture: session.user.picture,
+  // });
+  // if (user?.group) redirect("/home");
+
+  const allGroups = await getAllGroups();
+  const plainGroups = allGroups.map((group) => ({
+    _id: group._id.toString(),
+    name: group.name,
+    score: group.score,
+  }));
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-white">
@@ -65,7 +42,10 @@ export default async function ChooseGroup() {
             Join an existing team to compete or start your own journey.
           </p>
         </div>
-        <SearchGroup teams={teams} />
+
+          <JoinGroup groups={plainGroups} />
+
+        <div className="flex-1" />
 
         <div className="relative py-6 flex items-center justify-center">
           <div className="w-full h-px bg-slate-100"></div>

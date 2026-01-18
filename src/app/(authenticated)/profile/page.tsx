@@ -1,17 +1,29 @@
 import LogoutButton from "@/components/LogoutButton";
 import BackButton from "@/components/BackButton";
 import { auth0 } from "@/lib/auth0";
-// import { getDbUser } from "@/lib/user";
+import { getUserByEmail, getGroupForUser } from "@/lib/mongodb";
+import { redirect } from "next/navigation";
+import ProfileForm from "@/components/ProfileForm";
 
 export default async function Profile() {
-  const user = (await auth0.getSession())!.user;
-  // const dbUser = await getDbUser();
+  const session = await auth0.getSession();
+  if (!session?.user.email) redirect("/");
+
+  const user = session.user;
+  const dbUser = await getUserByEmail(user.email);
+
+  if (!dbUser) {
+    redirect("/");
+  }
+
+  const group = dbUser.group ? await getGroupForUser(dbUser) : null;
 
   const displayName = user.name;
   const email = user.email;
-  const profilePicture = user.picture;
-  const teamName = "No Team";
-  const userScore = 0;
+  const profilePicture = dbUser.profilePicture;
+  const teamName = group?.name || "No Team";
+  const userScore = dbUser.score || 0;
+  const linkedinUrl = dbUser.linkedinUrl || "";
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-white">
@@ -125,34 +137,11 @@ export default async function Profile() {
               </div> */}
             </div>
           </div>
-
-          <div className="group">
-            <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-2 ml-1">
-              LinkedIn URL
-            </label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0077b5] pointer-events-none">
-                <svg
-                  className="w-5 h-5 fill-current"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
-                </svg>
-              </div>
-              <input
-                className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 text-slate-700 font-bold focus:ring-2 focus:ring-[#0077b5]/20 focus:border-[#0077b5] outline-none transition-all shadow-card placeholder:text-slate-300 placeholder:opacity-60"
-                placeholder="https://linkedin.com/in/"
-                type="url"
-              />
-            </div>
-          </div>
         </div>
 
+        <ProfileForm initialLinkedinUrl={linkedinUrl} />
+
         <div className="flex flex-col gap-3 mt-2">
-          <button className="w-full py-4 bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl shadow-md shadow-primary/30 transition-all active:scale-[0.98]">
-            Save Changes
-          </button>
           <div className="w-full">
             <LogoutButton />
           </div>

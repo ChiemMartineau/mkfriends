@@ -20,13 +20,13 @@ export default function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
       ? "flex items-center justify-center w-7 text-primary font-black text-xl italic"
       : "flex items-center justify-center w-8 text-melon-green font-black text-xl italic";
 
-  const avatarClass = isUser
-    ? "size-12 rounded-full bg-cover bg-center border-2 border-primary"
-    : "size-12 rounded-full bg-cover bg-center border border-slate-200";
-
   const xpClass = isUser
     ? "text-primary font-bold font-mono"
     : "text-text-dark font-bold font-mono";
+
+  // Stacked member avatars (like Audi rings)
+  const memberAvatars = entry.memberAvatars || [];
+  const maxVisible = 3; // Show max 3 avatars, rest are indicated by +N badge
 
   return (
     <div className={rowClass}>
@@ -40,33 +40,38 @@ export default function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
 
       <div className={rankClass}>{entry.rank}</div>
 
-      <div className="relative">
-        <div
-          className={avatarClass}
-          style={{ backgroundImage: `url("${entry.avatarUrl}")` }}
-        />
-        {isTop && (
-          <div className="absolute -bottom-1 -right-1 bg-melon-green text-white rounded-full p-0.5 border border-white">
-            <span className="material-symbols-outlined text-[12px] block">
-              crown
-            </span>
-          </div>
-        )}
-      </div>
-
       <div className="flex-1 z-10">
-        <h4 className="text-text-dark font-bold text-base leading-tight">
+        <h4 className="text-text-dark font-bold text-xl leading-tight">
           {entry.name}
         </h4>
 
-        {isUser ? (
-          <div className="flex items-center gap-1">
-            <span className="text-primary text-xs font-medium">Your Team</span>
-            <span className="size-1.5 rounded-full bg-primary" />
-          </div>
-        ) : (
-          <p className="text-slate-400 text-xs font-medium">{entry.subtitle}</p>
-        )}
+        {/* Stacked Avatar Container under team name */}
+        <div className="relative w-24 h-8 mt-1">
+          {memberAvatars.slice(0, maxVisible).map((avatar, idx) => (
+            <div
+              key={idx}
+              className="absolute rounded-full bg-cover bg-center border-2 border-white shadow-sm"
+              style={{
+                width: "28px",
+                height: "28px",
+                backgroundImage: `url("${avatar}")`,
+                left: `${idx * 16}px`,
+                zIndex: maxVisible - idx,
+              }}
+            />
+          ))}
+          {memberAvatars.length > maxVisible && (
+            <div
+              className="absolute w-7 h-7 rounded-full bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center text-xs font-bold text-slate-600"
+              style={{
+                left: `${maxVisible * 16}px`,
+                zIndex: 0,
+              }}
+            >
+              +{memberAvatars.length - maxVisible}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="text-right z-10">

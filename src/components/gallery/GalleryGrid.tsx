@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import GalleryCard from "./GalleryCard";
 import ImageModal from "./ImageModal";
-import { GALLERY_ITEMS } from "./galleryData";
 import { GalleryItem } from "./types";
 import Link from "next/link";
 
@@ -22,7 +21,7 @@ function getFeaturedIndices(totalItems: number) {
   return featured;
 }
 
-export default function GalleryGrid() {
+export default function GalleryGrid({ items = [] }: { items?: GalleryItem[] }) {
   // Initialize featured indices only on client to avoid hydration mismatch
   const [featuredIndices, setFeaturedIndices] = useState<Set<number>>(
     new Set(),
@@ -31,8 +30,8 @@ export default function GalleryGrid() {
 
   useEffect(() => {
     // Calculate featured indices only on client side
-    setFeaturedIndices(getFeaturedIndices(GALLERY_ITEMS.length));
-  }, []);
+    setFeaturedIndices(getFeaturedIndices(items.length));
+  }, [items.length]);
 
   return (
     <main className="flex-1 max-w-md mx-auto w-full pb-24">
@@ -40,7 +39,7 @@ export default function GalleryGrid() {
         className="grid gap-3 p-4"
         style={{ gridTemplateColumns: "repeat(2, 1fr)" }}
       >
-        {GALLERY_ITEMS.map((item, index) => {
+        {items.map((item, index) => {
           const isFeatured = featuredIndices.has(index);
           return (
             <div

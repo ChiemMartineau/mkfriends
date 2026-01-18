@@ -2,6 +2,10 @@
 
 import { useEffect } from "react";
 import { GalleryItem } from "./types";
+import PeopleList from "./PeopleList";
+import PeopleRow from "./PeopleRow";
+import ProfileModal, { ProfileModalData } from "../ProfileModal";
+import { useState } from "react";
 
 type ImageModalProps = {
   item: GalleryItem | null;
@@ -9,6 +13,8 @@ type ImageModalProps = {
 };
 
 export default function ImageModal({ item, onClose }: ImageModalProps) {
+  const [selectedPerson, setSelectedPerson] = useState<ProfileModalData | null>(null);
+
   useEffect(() => {
     if (item) {
       document.body.style.overflow = "hidden";
@@ -45,21 +51,16 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
 
   if (!item) return null;
 
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(item.imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${item.name.replace(/\s+/g, "_")}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
+  const handleDownload = () => {
+    const filename = `${item.name.replace(/\s+/g, "_")}.jpg`;
+    const downloadUrl = `/api/download?url=${encodeURIComponent(item.imageUrl)}&filename=${encodeURIComponent(filename)}`;
+    
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
@@ -127,12 +128,32 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
         />
 
         {/* Info bar below image */}
-        <div className="absolute -bottom-16 left-0 right-0 text-center text-white">
-          <p className="text-lg font-bold">{item.name}</p>
-          <p className="text-sm text-white/80">
-            +{item.points} pts • {item.dateLabel}
-          </p>
+        <div className="w-full text-center text-white mt-3">
+      {/* <p className="text-sm text-white">
+        +{item.points} pts • {item.dateLabel}
+      </p> */}
+
+      {/* ✅ People list directly under date */}
+      {item.people && item.people.length > 0 && (
+        <div className="mt-3">
+          {/* <PeopleList people={item.people} /> */}
+          <PeopleRow
+            people={item.people}
+            onPersonClick={(p) =>
+              setSelectedPerson({
+                id: p.id,
+                name: p.name,
+                avatarUrl: p.avatarUrl,
+                groupName: p.groupName,
+                description: "Profile details coming soon.",
+                points: p.points,
+              })
+            }
+          />
         </div>
+      )}
+    </div>
+      <ProfileModal person={selectedPerson} onClose={() => setSelectedPerson(null)} />
       </div>
     </div>
   );

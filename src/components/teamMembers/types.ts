@@ -3,4 +3,6 @@ export type TeamMember = {
   name: string;
   avatarUrl: string;
   isYou?: boolean;
+  groupName?: string;
+  points?: number;
 };

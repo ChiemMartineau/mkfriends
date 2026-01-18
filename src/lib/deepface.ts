@@ -1,4 +1,8 @@
-const deepfaceURL = "http://209.38.2.186:5005/";
+const { DEEPFACE_URL } = process.env;
+
+if (!DEEPFACE_URL) {
+  throw new Error("Missing Deepface URL");
+}
 
 const models = [
   "VGG-Face",
@@ -43,26 +47,29 @@ export const deepface = {
   verify,
 };
 
-async function verify(image1Base64: string, image2Base64: string) {
-  const response = await fetch(`${deepfaceURL}/verify`, {
+async function verify(image1Url: string, image2Url: string): Promise<Boolean> {
+  const reqBody = JSON.stringify({
+      model_name: models[6],
+      detector_backend: backends[5],
+      distance_metric: metrics[0],
+      align: true,
+      img1: image1Url,
+      img2: image2Url,
+      enforce_detection: true,
+      anti_spoofing: false,
+    });
+    
+  const response = await fetch(`${DEEPFACE_URL}/verify`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model_name: models[2],
-      detector_backend: backends[5],
-      distance_metric: metrics[0],
-      align: true,
-      img1: image1Base64,
-      img2: image2Base64,
-      enforce_detection: true,
-      anti_spoofing: true,
-    }),
+    body: reqBody,
   });
 
-  console.log(response);
-  // const data = await response.json();
+  const data = await response.json();
+  
+  return data.verified;
 
   // if (response.status !== 200) {
   //   console.log(data.error);

@@ -1,11 +1,15 @@
 import { PLAYER_STATS } from "./playerStats";
 import Link from "next/link";
 import { auth0 } from "@/lib/auth0";
+import { getUserByEmail } from "@/lib/mongodb";
 
 export default async function TopNav({ title }: { title: string }) {
   const session = await auth0.getSession();
   const user = session!.user!;
   const profilePicture = user.picture;
+
+  const dbUser = await getUserByEmail(user.email!);
+  const userScore = dbUser?.score || 0;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-pale-green transition-colors duration-300">
@@ -28,7 +32,7 @@ export default async function TopNav({ title }: { title: string }) {
             bolt
           </span>
           <p className="text-green-900 text-sm font-bold leading-normal tracking-[0.015em] shrink-0">
-            {PLAYER_STATS.points.toLocaleString()}
+            {userScore.toLocaleString()}
           </p>
         </div>
       </div>

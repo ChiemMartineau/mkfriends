@@ -2,10 +2,81 @@ import BottomNav from "@/components/BottomNav";
 import TopNav from "@/components/TopNav";
 import LeaderboardList from "@/components/leaderboard/LeaderboardList";
 import TeamMembersSection from "@/components/teamMembers/TeamMembersSection";
-import { PLAYER_STATS } from "@/components/playerStats";
 import Logo from "@/components/leaderboard/Logo";
+import { auth0 } from "@/lib/auth0";
+import {
+  getAllGroups,
+  getGroupForUser,
+  getUserByEmail,
+  getUsersForGroup,
+} from "@/lib/mongodb";
+import type { LeaderboardEntry } from "@/components/leaderboard/types";
+import type { TeamMember } from "@/components/teamMembers/types";
 
 export default async function Leaderboard() {
+  const session = await auth0.getSession();
+  const currentUserEmail = session?.user?.email;
+  const currentUser = currentUserEmail
+    ? await getUserByEmail(currentUserEmail)
+    : null;
+
+  const userGroup = currentUser ? await getGroupForUser(currentUser) : null;
+
+  const groups = await getAllGroups();
+
+  const entriesWithScores: LeaderboardEntry[] = await Promise.all(
+    groups.map(async (group) => {
+      const members = await getUsersForGroup(group._id);
+      const totalScore = members.reduce((sum, m) => sum + (m.score || 0), 0);
+      const memberAvatars = members.map(
+        (m) =>
+          m.profilePicture ||
+          "https://mkfriends.tor1.cdn.digitaloceanspaces.com/default-avatar.png",
+      );
+
+      return {
+        id: group._id.toString(),
+        name: group.name,
+        subtitle: `${members.length} Members`,
+        memberAvatars,
+        xp: totalScore,
+        rank: 0,
+        isUserTeam:
+          userGroup ? group._id.equals(userGroup._id) : false,
+      };
+    }),
+  );
+
+  const sortedEntries = entriesWithScores
+    .sort((a, b) => b.xp - a.xp)
+    .map((entry, idx) => ({
+      ...entry,
+      rank: idx + 1,
+      isTop: idx === 0,
+    }));
+
+  const userEntry = sortedEntries.find((e) => e.isUserTeam);
+
+  const teamMembersRaw = userGroup
+    ? await getUsersForGroup(userGroup._id)
+    : [];
+
+  const teamMembers: TeamMember[] = teamMembersRaw.map((m) => ({
+    id: m._id.toString(),
+    name: m.name || "Unknown",
+    avatarUrl:
+      m.profilePicture ||
+      "https://mkfriends.tor1.cdn.digitaloceanspaces.com/default-avatar.png",
+    isYou: currentUser ? m._id.equals(currentUser._id) : false,
+    groupName: userGroup?.name,
+    points: m.score || 0,
+  }));
+
+  const teamName = userGroup?.name || "My Team";
+  const teamRank = userEntry?.rank || (sortedEntries.length ? sortedEntries.length : 0);
+  const teamPoints = userEntry?.xp || 0;
+  const teamSize = teamMembers.length;
+
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-soft shadow-2xl">
       <TopNav title={"Leaderboard"} />
@@ -19,13 +90,13 @@ export default async function Leaderboard() {
             <Logo />
             <div className="text-center">
               <h1 className="text-3xl font-extrabold tracking-tight text-text-dark mb-1">
-                {PLAYER_STATS.teamName}
+                {teamName}
               </h1>
             </div>
             <div className="grid grid-cols-3 gap-3 w-full mt-2">
               <div className="bg-white rounded-2xl p-3 flex flex-col items-center justify-center border border-divider-green shadow-sm">
                 <span className="text-2xl font-bold text-melon-green">
-                  #{PLAYER_STATS.teamRank}
+                  #{teamRank}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
                   Rank
@@ -34,7 +105,7 @@ export default async function Leaderboard() {
               <div className="bg-white rounded-2xl p-3 flex flex-col items-center justify-center border border-pastel-pink/50 relative overflow-hidden group shadow-sm">
                 <div className="absolute inset-0 bg-pastel-pink/5 group-hover:bg-pastel-pink/10 transition-colors"></div>
                 <span className="text-2xl font-bold text-primary">
-                  {PLAYER_STATS.points.toLocaleString()}
+                  {teamPoints.toLocaleString()}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider text-primary/80 font-bold">
                   XP Points
@@ -42,7 +113,7 @@ export default async function Leaderboard() {
               </div>
               <div className="bg-white rounded-2xl p-3 flex flex-col items-center justify-center border border-divider-green shadow-sm">
                 <span className="text-2xl font-bold text-melon-green">
-                  {PLAYER_STATS.nbTeamMembers}
+                  {teamSize}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
                   Members
@@ -56,7 +127,7 @@ export default async function Leaderboard() {
           </div>
         </section>
 
-        <TeamMembersSection />
+        <TeamMembersSection members={teamMembers} />
         {/* <section className="mt-2 pl-6 pb-6">
           <div className="flex items-center justify-between pr-6 mb-3">
             <h3 className="text-lg font-bold text-text-dark">Team Members</h3>
@@ -112,7 +183,7 @@ export default async function Leaderboard() {
             </div>
           </div>
         </section> */}
-        <LeaderboardList />
+        <LeaderboardList entries={sortedEntries} />
       </main>
       <BottomNav />
     </div>
