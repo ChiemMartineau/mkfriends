@@ -154,7 +154,7 @@ export default function CameraCapture({ onSubmit }: CameraCaptureProps) {
       // Navigate back only after the image has been processed
       router.back();
     } catch (error) {
-      setErrorMessage("Failed to upload image. Please try again.");
+      setErrorMessage("Our system flagged this picture. Please try a different one.");
       setIsSubmitting(false);
     }
   };
@@ -184,7 +184,7 @@ export default function CameraCapture({ onSubmit }: CameraCaptureProps) {
       ) : null}
 
       {errorMessage ? (
-        <div className="absolute left-3 top-3 rounded-lg bg-rose-500/80 px-3 py-1 text-xs text-white">
+        <div className="w-[60%] absolute right-3 top-3 rounded-lg bg-rose-500/80 px-3 py-2 text-xs text-white">
           {errorMessage}
         </div>
       ) : null}

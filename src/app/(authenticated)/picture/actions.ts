@@ -21,6 +21,7 @@ export async function uploadImage(blob: Blob) {
   const isValidSelfie = await checkImageIsSelfie(blob);
   if (!isValidSelfie) {
     console.log("The uploaded image does not contain real people.");
+    return { error: "Our system flagged this picture" };
   }
 
   const key = `selfies/${crypto.randomUUID()}.${getExtensionFromBlob(blob)}`;
