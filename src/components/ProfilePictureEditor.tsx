@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { updateProfilePicture } from "@/app/(authenticated)/profile/actions";
 
 type ProfilePictureEditorProps = {
@@ -36,6 +36,28 @@ export default function ProfilePictureEditor({
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+
+    // Optional: avoid layout shift when scrollbar disappears
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    if (scrollBarWidth > 0) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+    };
+  }, [isModalOpen]);
+
 
   return (
     <>

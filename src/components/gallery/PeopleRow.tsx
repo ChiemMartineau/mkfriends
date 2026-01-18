@@ -7,15 +7,6 @@ export default function PeopleRow({
 }) {
   return (
     <div className="w-full mt-4">
-      <div className="flex items-center justify-between mb-2 px-1">
-        <p className="text-white/90 text-sm font-bold tracking-wide">
-          People in this photo
-        </p>
-        <p className="text-white/60 text-xs font-semibold">
-          {people.length}
-        </p>
-      </div>
-
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
         {people.map((p) => (
           <button
@@ -38,7 +29,7 @@ export default function PeopleRow({
                 p.isYou ? "text-white" : "text-white/80",
               ].join(" ")}
             >
-              {p.name}
+              {p.name.trim().split(" ")[0]}
             </span>
           </button>
         ))}

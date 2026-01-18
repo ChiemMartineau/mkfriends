@@ -123,7 +123,7 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
         <img
           src={item.imageUrl}
           alt={item.name}
-          className="max-w-full max-h-[calc(100vh-8rem)] w-auto h-auto rounded-2xl shadow-2xl"
+          className="max-w-full max-h-[calc(60vh-8rem)] h-auto rounded-2xl shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         />
 
@@ -133,7 +133,7 @@ export default function ImageModal({ item, onClose }: ImageModalProps) {
         +{item.points} pts • {item.dateLabel}
       </p> */}
 
-      {/* ✅ People list directly under date */}
+      {/* People list directly under date */}
       {item.people && item.people.length > 0 && (
         <div className="mt-3">
           {/* <PeopleList people={item.people} /> */}
